@@ -286,7 +286,7 @@ class AES:
 
         return b''.join(blocks)
 
-    def decrypt_cbc(self, ciphertext, iv):
+    def decrypt_cbc(self, ciphertext, iv, *, unsafe_do_not_unpad=False):
         """
         Decrypts `plaintext` using CBC mode and PKCS#7 padding, with the given
         initialization vector (iv).
@@ -300,7 +300,11 @@ class AES:
             blocks.append(xor_bytes(previous, self.decrypt_block(ciphertext_block)))
             previous = ciphertext_block
 
-        return unpad(b''.join(blocks))
+        joined = b''.join(blocks)
+        if unsafe_do_not_unpad:
+            return joined
+
+        return unpad(joined)
 
     def encrypt_pcbc(self, plaintext, iv):
         """
